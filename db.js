@@ -20,28 +20,15 @@ sequelize
 
 // Model Defination =============================
 // Using Define method
-/*
-const User = sequelize.define("User", {
-  firstName: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  lastName: {
-    type: DataTypes.STRING,
-  },{
-    freezeTableName: true, //To prevent sql to rename the table according to it (This is for perticular table)
-    tableName: 'employee',  //This is to give any name to table either use this or freezeTableName option
-  }
-});
-console.log(User === sequelize.models.User);
-*/
 
-// Usign Model init (Extending Model)
-
-class User extends Model {}
-
-User.init(
+const User = sequelize.define(
+  "User",
   {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: Sequelize.UUIDV4, // Or Sequelize.UUIDV1 AUtomatically insert a Unique ID in it
+      primaryKey: true,
+    },
     firstName: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -51,10 +38,35 @@ User.init(
     },
   },
   {
-    sequelize,
-    modelName: "User",
+    freezeTableName: true, //To prevent sql to rename the table according to it (This is for perticular table)
+    // timestamps: false, //to desable created at and updated at
   }
 );
+
+const Person = sequelize.define("Person", {
+  name: {
+    type: DataTypes.STRING,
+    defaultValue: "John Doe",
+  },
+});
+
+const Foo = sequelize.define("Foo", {
+  bar: {
+    type: DataTypes.DATE,
+    defaultValue: Sequelize.NOW,
+    // This way, the current date/time will be used to populate this column (at the moment of insertion)
+  },
+});
+
+// Model Syncronization
+// User.sync({ force: true }); //this is mendatory to use this to create table in DB or to recreate table
+
+// Sync all models
+sequelize.sync({ force: true }); //This method is use to sync all models in the table
+
+// User.drop(); //to drop table
+// sequelize.drop(); //to drop all tables
+
 console.log(User === sequelize.models.User);
 
 module.exports = sequelize;
